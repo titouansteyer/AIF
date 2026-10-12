@@ -1,0 +1,18 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# On copie d'abord uniquement les requirements
+COPY requirements-api.txt .
+
+# On installe les dépendances (cette couche sera mise en cache)
+RUN pip install --default-timeout=300 --retries 10 --trusted-host pypi.python.org -r requirements-api.txt
+
+# Puis on copie le code
+COPY . /app
+
+EXPOSE 5075
+
+ENV FLASK_ENV=production
+
+CMD ["python", "mnist_api.py", "--model_path", "weights/mnist_net.pth"]
